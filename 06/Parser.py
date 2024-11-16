@@ -8,6 +8,7 @@ Unported [License](https://creativecommons.org/licenses/by-nc-sa/3.0/).
 import typing
 from typing import List
 
+
 class Parser:
     """Encapsulates access to the input code. Reads an assembly program
     by reading each command line-by-line, parses the current command,
@@ -32,10 +33,7 @@ class Parser:
         self._all_lines = lines
         self._curr_line = ""
         self._curr_line_ind = -1
-
-
-        self._non_l_command_count = 0
-
+        # self.ROM_address = 0
 
     # this is a helper for the constractor
     def filter_command_lines_in_place(self, lines: List[str]) -> None:
@@ -49,7 +47,6 @@ class Parser:
                 i += 1
             else:
                 i += 1
-
 
     def has_more_commands(self) -> bool:
         """Are there more commands in the input?
@@ -67,10 +64,9 @@ class Parser:
             return None
         self._curr_line += 1
         self._curr_line = self._curr_line[self._curr_line_ind]
-        if self.command_type() != "L_COMMAND":
-            self._non_l_command_count += 1
-            return None
-
+        # if self.command_type() != "L_COMMAND":
+        #     self.ROM_address += 1
+        #     return None
 
     def command_type(self) -> str:
         """
@@ -112,7 +108,6 @@ class Parser:
         if self.command_type() != "C_COMMAND":
             return "not a c-command!"
         return self._curr_line.split("=")[0]
-
 
     def comp(self) -> str:
         """
