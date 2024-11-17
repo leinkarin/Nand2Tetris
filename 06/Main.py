@@ -8,25 +8,94 @@ Unported [License](https://creativecommons.org/licenses/by-nc-sa/3.0/).
 import os
 import sys
 import typing
+
 from SymbolTable import SymbolTable
 from Parser import Parser
 from Code import Code
 
+BIT_FORMAT = "015b"
+
+
 def do_first_pass(parser: Parser, symbol_table: SymbolTable) -> None:
+    """
+    This function is responsible for the first pass of the assembler.
+    :param parser: Parser object
+    :param symbol_table: SymbolTable object
+    """
+    rom_address = 0
+
     while parser.has_more_commands():
         parser.advance()
         if parser.command_type() == "L_COMMAND":
             symbol = parser.symbol()
-            symbol_table.add_entry(symbol, parser._non_l_command_count)
+            symbol_table.add_entry(symbol, rom_address)
+        else:
+            rom_address += 1
 
 
+def a_command_handler(parser: Parser, symbol_table: SymbolTable, output_file: typing.TextIO, var_address: int) -> int:
+    """
+    This function is responsible for handling A_COMMANDS
+    :param parser: Parser object
+    :param symbol_table: SymbolTable object
+    :param output_file: output file
+    :param var_address: the address of the variable
+    :return: the updated var_address
+    """
+    symbol = parser.symbol()
+    new_line = "0"
 
-# todo
-def do_second_pass(parser: Parser, symbol_table: SymbolTable, output_file:
-typing.TextIO) -> None:
-    return None
+    if symbol.isdigit():
+        new_line += format(int(symbol), BIT_FORMAT)
+
+    else:
+        if symbol_table.contains(symbol):
+            new_line += format(symbol_table.get_address(symbol), BIT_FORMAT)
+
+        else:
+            symbol_table.add_entry(symbol, var_address)
+            new_line += format(var_address, BIT_FORMAT)
+            var_address += 1
+
+    if parser.has_more_commands():
+        new_line += "\n"
+
+    output_file.write(new_line)
+    return var_address
 
 
+def c_command_handler(parser: Parser, output_file: typing.TextIO) -> None:
+    """
+    This function is responsible for handling C_COMMANDS
+    :param parser: Parser object
+    :param output_file: output file
+    """
+    comp_mnemonic = parser.comp()
+
+    new_line = "101" if "<<" in comp_mnemonic or ">>" in comp_mnemonic else "111"
+    new_line += Code.comp(comp_mnemonic) + Code.dest(parser.dest()) + Code.jump(parser.jump())
+    if parser.has_more_commands():
+        new_line += "\n"
+    output_file.write(new_line)
+
+
+def do_second_pass(parser: Parser, symbol_table: SymbolTable, output_file: typing.TextIO) -> None:
+    """
+    This function is responsible for the second pass of the assembler.
+    :param parser: Parser object
+    :param symbol_table: SymbolTable object
+    :param output_file: output file
+    """
+    var_address = 16
+
+    while parser.has_more_commands():
+        parser.advance()
+
+        if parser.command_type() == "A_COMMAND":
+            var_address = a_command_handler(parser, symbol_table, output_file, var_address)
+
+        if parser.command_type() == "C_COMMAND":
+            c_command_handler(parser, output_file)
 
 
 def assemble_file(

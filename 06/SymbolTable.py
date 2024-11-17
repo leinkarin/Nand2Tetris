@@ -13,13 +13,11 @@ class SymbolTable:
     numeric addresses.
     """
 
-    # todo - איך אני יודע שאלה הסימונים ולא חסר?
     def __init__(self) -> None:
         """Creates a new symbol table initialized with all the predefined symbols
         and their pre-allocated RAM addresses, according to section 6.2.3 of the
         book.
         """
-        # Your code goes here!
         self.symbol_table = {
             "R0": 0,
             "R1": 1,
@@ -65,7 +63,6 @@ class SymbolTable:
             bool: True if the symbol is contained, False otherwise.
         """
         return symbol in self.symbol_table
-
 
     def get_address(self, symbol: str) -> int:
         """Returns the address associated with the symbol.
