@@ -17,6 +17,11 @@ BIT_FORMAT = "015b"
 
 
 def do_first_pass(parser: Parser, symbol_table: SymbolTable) -> None:
+    """
+    This function is responsible for the first pass of the assembler.
+    :param parser: Parser object
+    :param symbol_table: SymbolTable object
+    """
     rom_address = 0
 
     while parser.has_more_commands():
@@ -29,6 +34,14 @@ def do_first_pass(parser: Parser, symbol_table: SymbolTable) -> None:
 
 
 def a_command_handler(parser: Parser, symbol_table: SymbolTable, output_file: typing.TextIO, var_address: int) -> int:
+    """
+    This function is responsible for handling A_COMMANDS
+    :param parser: Parser object
+    :param symbol_table: SymbolTable object
+    :param output_file: output file
+    :param var_address: the address of the variable
+    :return: the updated var_address
+    """
     symbol = parser.symbol()
     new_line = "0"
 
@@ -45,23 +58,34 @@ def a_command_handler(parser: Parser, symbol_table: SymbolTable, output_file: ty
             var_address += 1
 
     if parser.has_more_commands():
-        new_line+="\n"
+        new_line += "\n"
 
     output_file.write(new_line)
     return var_address
 
 
 def c_command_handler(parser: Parser, output_file: typing.TextIO) -> None:
+    """
+    This function is responsible for handling C_COMMANDS
+    :param parser: Parser object
+    :param output_file: output file
+    """
     comp_mnemonic = parser.comp()
 
     new_line = "101" if "<<" in comp_mnemonic or ">>" in comp_mnemonic else "111"
     new_line += Code.comp(comp_mnemonic) + Code.dest(parser.dest()) + Code.jump(parser.jump())
     if parser.has_more_commands():
-        new_line+="\n"
+        new_line += "\n"
     output_file.write(new_line)
 
 
 def do_second_pass(parser: Parser, symbol_table: SymbolTable, output_file: typing.TextIO) -> None:
+    """
+    This function is responsible for the second pass of the assembler.
+    :param parser: Parser object
+    :param symbol_table: SymbolTable object
+    :param output_file: output file
+    """
     var_address = 16
 
     while parser.has_more_commands():
@@ -71,7 +95,7 @@ def do_second_pass(parser: Parser, symbol_table: SymbolTable, output_file: typin
             var_address = a_command_handler(parser, symbol_table, output_file, var_address)
 
         if parser.command_type() == "C_COMMAND":
-            c_command_handler(parser,output_file)
+            c_command_handler(parser, output_file)
 
 
 def assemble_file(
@@ -93,7 +117,6 @@ def assemble_file(
     input_file.seek(0)
     parser_2 = Parser(input_file)
     do_second_pass(parser_2, symbol_table, output_file)
-
 
 
 if "__main__" == __name__:

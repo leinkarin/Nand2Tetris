@@ -64,7 +64,6 @@ class SymbolTable:
         """
         return symbol in self.symbol_table
 
-
     def get_address(self, symbol: str) -> int:
         """Returns the address associated with the symbol.
 

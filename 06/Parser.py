@@ -22,7 +22,6 @@ class Parser:
         Args:
             input_file (typing.TextIO): input file.
         """
-        # Your code goes here!
         # A good place to start is to read all the lines of the input:
         # input_lines = input_file.read().splitlines()
         lines = []
@@ -36,8 +35,12 @@ class Parser:
         self._curr_line = ""
         self._curr_line_ind = -1
 
-    # this is a helper for the constractor
     def filter_command_lines_in_place(self, lines: List[str]) -> None:
+        """
+        Removes all white space and comments from the given lines in place.
+        Args:
+            lines (List[str]): list of lines to filter.
+        """
         i = 0
         while i < len(lines):
             line = lines[i]
@@ -102,7 +105,6 @@ class Parser:
             str: the dest mnemonic in the current C-command. Should be called 
             only when commandType() is "C_COMMAND".
         """
-        # Your code goes here!
         if self.command_type() != "C_COMMAND":
             return "not a c-command!"
         return self._curr_line.split("=")[0]

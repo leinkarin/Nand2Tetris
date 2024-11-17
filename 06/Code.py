@@ -76,10 +76,6 @@ class Code:
             'M>>': '1000000',
         }
         return comp_dict.get(mnemonic, "0000000")
-        # dict_without_space = {x[1:]: y for x, y in comp_dict.items()}
-        # if mnemonic in dict_without_space:
-        #     return dict_without_space[mnemonic]
-        # return Code.comp_dict[mnemonic]
 
     @staticmethod
     def jump(mnemonic: str) -> str:
