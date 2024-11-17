@@ -62,8 +62,8 @@ class Parser:
         """
         if not self.has_more_commands():
             return None
-        self._curr_line += 1
-        self._curr_line = self._curr_line[self._curr_line_ind]
+        self._curr_line_ind += 1
+        self._curr_line = self._all_lines[self._curr_line_ind]
         # if self.command_type() != "L_COMMAND":
         #     self.ROM_address += 1
         #     return None
@@ -107,7 +107,7 @@ class Parser:
         # Your code goes here!
         if self.command_type() != "C_COMMAND":
             return "not a c-command!"
-        return self._curr_line.split("=")[0]
+        return self._curr_line.split("=")[0].replace(" ", "")
 
     def comp(self) -> str:
         """
@@ -116,7 +116,7 @@ class Parser:
             only when commandType() is "C_COMMAND".
         """
         if "=" in self._curr_line:
-            return self._curr_line.split("=")[1].split(";")[0]
+            return self._curr_line.split("=")[1].split(";")[0].replace(" ", "")
         else:
             return self._curr_line.split(";")[0]
 
@@ -126,4 +126,6 @@ class Parser:
             str: the jump mnemonic in the current C-command. Should be called 
             only when commandType() is "C_COMMAND".
         """
-        return self._curr_line.split(";")[1]
+        if ";" in self._curr_line:
+            return self._curr_line.split(";")[1].replace(" ", "")
+        return "null"

@@ -33,7 +33,7 @@ def a_command_handler(parser: Parser, symbol_table: SymbolTable, output_file: ty
     new_line = "0"
 
     if symbol.isdigit():
-        new_line += format(symbol, BIT_FORMAT)
+        new_line += format(int(symbol), BIT_FORMAT)
 
     else:
         if symbol_table.contains(symbol):
@@ -41,10 +41,13 @@ def a_command_handler(parser: Parser, symbol_table: SymbolTable, output_file: ty
 
         else:
             symbol_table.add_entry(symbol, var_address)
-            var_address += 1
             new_line += format(var_address, BIT_FORMAT)
+            var_address += 1
 
-    output_file.write(new_line + "\n")
+    if parser.has_more_commands():
+        new_line+="\n"
+
+    output_file.write(new_line)
     return var_address
 
 
@@ -52,7 +55,9 @@ def c_command_handler(parser: Parser, output_file: typing.TextIO) -> None:
     comp_mnemonic = parser.comp()
 
     new_line = "101" if "<<" in comp_mnemonic or ">>" in comp_mnemonic else "111"
-    new_line += Code.comp(comp_mnemonic) + Code.dest(parser.dest()) + Code.jump(parser.jump()) + "\n"
+    new_line += Code.comp(comp_mnemonic) + Code.dest(parser.dest()) + Code.jump(parser.jump())
+    if parser.has_more_commands():
+        new_line+="\n"
     output_file.write(new_line)
 
 
@@ -88,6 +93,7 @@ def assemble_file(
     input_file.seek(0)
     parser_2 = Parser(input_file)
     do_second_pass(parser_2, symbol_table, output_file)
+
 
 
 if "__main__" == __name__:
