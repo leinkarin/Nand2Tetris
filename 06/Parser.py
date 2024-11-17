@@ -26,14 +26,15 @@ class Parser:
         # A good place to start is to read all the lines of the input:
         # input_lines = input_file.read().splitlines()
         lines = []
+
         for line in input_file.readlines():
-            stripped_line = line.strip()
+            stripped_line = line.strip().replace(" ", "")
             lines.append(stripped_line)
+
         self.filter_command_lines_in_place(lines)
         self._all_lines = lines
         self._curr_line = ""
         self._curr_line_ind = -1
-        # self.ROM_address = 0
 
     # this is a helper for the constractor
     def filter_command_lines_in_place(self, lines: List[str]) -> None:
@@ -64,9 +65,6 @@ class Parser:
             return None
         self._curr_line_ind += 1
         self._curr_line = self._all_lines[self._curr_line_ind]
-        # if self.command_type() != "L_COMMAND":
-        #     self.ROM_address += 1
-        #     return None
 
     def command_type(self) -> str:
         """
@@ -107,7 +105,7 @@ class Parser:
         # Your code goes here!
         if self.command_type() != "C_COMMAND":
             return "not a c-command!"
-        return self._curr_line.split("=")[0].replace(" ", "")
+        return self._curr_line.split("=")[0]
 
     def comp(self) -> str:
         """
@@ -127,5 +125,5 @@ class Parser:
             only when commandType() is "C_COMMAND".
         """
         if ";" in self._curr_line:
-            return self._curr_line.split(";")[1].replace(" ", "")
+            return self._curr_line.split(";")[1]
         return "null"
